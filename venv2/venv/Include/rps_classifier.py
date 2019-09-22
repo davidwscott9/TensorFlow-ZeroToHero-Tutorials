@@ -6,6 +6,7 @@ import os
 import zipfile
 import matplotlib.pyplot as plt
 
+# dataset found at http://bit.ly/2kbV92O
 local_zip = 'tmp/rps.zip'
 zip_ref = zipfile.ZipFile(local_zip, 'r')
 zip_ref.extractall('tmp/')
