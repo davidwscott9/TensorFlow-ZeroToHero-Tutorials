@@ -12,10 +12,12 @@ zip_ref = zipfile.ZipFile(local_zip, 'r')
 zip_ref.extractall('tmp/')
 zip_ref.close()
 
+# extract files from zip folder
 local_zip = 'tmp/rps-test-set.zip'
 zip_ref = zipfile.ZipFile(local_zip, 'r')
 zip_ref.extractall('tmp/')
 zip_ref.close()
+
 
 TRAINING_DIR = 'tmp/rps/'
 training_datagen = ImageDataGenerator(
@@ -29,6 +31,7 @@ training_datagen = ImageDataGenerator(
     fill_mode='nearest'
 )
 
+# get the training labels from the image lables
 train_generator = training_datagen.flow_from_directory(
     TRAINING_DIR,
     target_size=(150,150),
@@ -38,12 +41,14 @@ train_generator = training_datagen.flow_from_directory(
 VALIDATION_DIR = 'tmp/rps-test-set/'
 validation_datagen = ImageDataGenerator(rescale = 1./255)
 
+# get the validation labels from the image lables
 validation_generator = validation_datagen.flow_from_directory(
     VALIDATION_DIR,
     target_size=(150,150),
     class_mode='categorical'
 )
 
+# define the convolutional neural network
 model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(64, (3,3), activation='relu', input_shape=(150,150,3)),
     tf.keras.layers.MaxPooling2D(2,2),
@@ -65,23 +70,21 @@ model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
 
+# fit the model
 history = model.fit_generator(train_generator, epochs=25,
                               validation_data=validation_generator,
                               verbose=1)
-
-model.save("rps.h5")
 
 acc = history.history['acc']
 val_acc = history.history['val_acc']
 loss = history.history['loss']
 val_loss = history.history['val_loss']
-
 epochs = range(len(acc))
 
+# plot the training and validation accuracy over every epoch
 plt.plot(epochs, acc, 'r', label='Training accuracy')
 plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
 plt.title('Training and validation accuracy')
 plt.legend(loc=0)
 plt.figure()
-
 plt.show()
